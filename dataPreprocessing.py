@@ -21,13 +21,14 @@ def dataPreprocess(dataLoc: str = './data/tecator.arff'):
 
     pipe = rp.preprocessing.Pipeline([rp.preprocessing.denoise.SavGol(window_length=9, polyorder=3),
                                       rp.preprocessing.baseline.ASLS(),
-                                      rp.preprocessing.normalise.Vector(pixelwise = True)])
+                                      rp.preprocessing.normalise.MinMax(pixelwise = True)])
 
     spectral_axis = np.linspace(9523.8,11764.7,100)
 
     raman_spectrum = rp.Spectrum(spectral_data,spectral_axis)
 
     preprocessed_spectra = pipe.apply(raman_spectrum)
+
     
     return preprocessed_spectra, meta_data, pca_data, spectral_data, spectral_axis
 
