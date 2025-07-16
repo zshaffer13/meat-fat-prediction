@@ -10,20 +10,24 @@ from scipy.io import arff
 import ramanspy as rp
 import numpy as np
 
-data = arff.loadarff('./data/tecator.arff')
-df = pd.DataFrame(data[0])
+def dataPreprocess(dataLoc: str = './data/tecator.arff'):
 
-spectral_data = df.iloc[:,0:100]
-pca_data = df.iloc[:,100:122]
-meta_data = df.iloc[:,122:]
+    data = arff.loadarff(dataLoc)
+    df = pd.DataFrame(data[0])
 
-pipe = rp.preprocessing.Pipeline([rp.preprocessing.denoise.SavGol(window_length=9, polyorder=3),
-                                 rp.preprocessing.baseline.ASLS(),
-                                 rp.preprocessing.normalise.Vector(pixelwise = True)])
+    spectral_data = df.iloc[:,0:100]
+    pca_data = df.iloc[:,100:122]
+    meta_data = df.iloc[:,122:]
 
-spectral_axis = np.linspace(9523.8,11764.7,100)
+    pipe = rp.preprocessing.Pipeline([rp.preprocessing.denoise.SavGol(window_length=9, polyorder=3),
+                                      rp.preprocessing.baseline.ASLS(),
+                                      rp.preprocessing.normalise.Vector(pixelwise = True)])
 
-raman_spectrum = rp.Spectrum(spectral_data,spectral_axis)
+    spectral_axis = np.linspace(9523.8,11764.7,100)
 
-preprocessed_spectra = pipe.apply(raman_spectrum)
+    raman_spectrum = rp.Spectrum(spectral_data,spectral_axis)
+
+    preprocessed_spectra = pipe.apply(raman_spectrum)
+    
+    return preprocessed_spectra, meta_data, pca_data, spectral_data, spectral_axis
 
